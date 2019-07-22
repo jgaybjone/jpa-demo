@@ -1,0 +1,35 @@
+server:
+  port: 8082
+spring:
+  application:
+    name: jpa-demo
+  security:
+    user:
+      name: admin
+      password: admin
+  profiles:
+    active: dev
+
+
+  jackson:
+    serialization:                        #null字段自动忽略
+      indent_output: true                 #格式化打印json字符串
+      fail_on_empty_beans: false          #循环依赖自动拆开
+    default-property-inclusion: non_null  #null输出忽略
+    date-format: "yyyy-MM-dd HH:mm:ss"    #默认日期格式化
+    time-zone: GMT+8
+    deserialization:
+      fail_on_unknown_properties: false
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://172.16.6.190:8761/eureka/
+  instance:
+    prefer-ip-address: true

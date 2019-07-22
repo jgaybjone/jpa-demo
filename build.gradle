@@ -1,0 +1,100 @@
+plugins {
+	id 'org.springframework.boot' version '2.1.6.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.7.RELEASE'
+	id "org.jetbrains.kotlin.jvm" version "1.3.40"
+	id 'org.jetbrains.kotlin.plugin.spring' version '1.3.40'
+	id "org.jetbrains.kotlin.plugin.allopen" version "1.3.41"
+	id "org.jetbrains.kotlin.plugin.noarg" version "1.3.41"
+	id 'java'
+}
+
+//apply plugin: 'kotlin-noarg'
+//apply plugin: 'kotlin-allopen'
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+	all*.exclude group: "org.antlr", module: "antlr4-annotations"
+}
+
+ext {
+	springCloudVersion = "Greenwich.SR1"
+	
+}
+
+configurations.all {
+	resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds' // 动态版本 x.x.+
+	resolutionStrategy.cacheChangingModulesFor 0, 'seconds'//  变化版本 x.x.x
+}
+
+test.enabled = System.getProperty("test", "false") == "true"
+
+repositories {
+	maven { url "https://maven.aliyun.com/repository/public" }
+	maven { url "https://repo.spring.io/libs-milestone" }
+	maven { url "https://raw.githubusercontent.com/jgaybjone/mvnrepo/master" }
+	maven {
+		url 'https://oss.jfrog.org/artifactory/oss-snapshot-local/'
+	}
+	
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'org.jetbrains.kotlin:kotlin-reflect'
+	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
+	implementation "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client"
+	implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '2.9.9'
+	
+	implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+	
+	implementation 'cn.jgayb:jpa-service:1.3-RELEASE' //spring data jpa项目使用
+	
+	/**
+	 * RxJava
+	 */
+	compile 'io.reactivex.rxjava2:rxjava:2.0.1'
+	compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+	
+	
+	runtimeOnly 'mysql:mysql-connector-java'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'io.projectreactor:reactor-test'
+}
+
+compileKotlin {
+	kotlinOptions {
+		jvmTarget = "1.8"
+	}
+}
+compileTestKotlin {
+	kotlinOptions {
+		jvmTarget = "1.8"
+	}
+}
+
+//这里进行noArg的配置
+noArg {
+	//配置路径就是咱们先开始定义的那个注解类
+	annotation("com.example.jpademo.annotation.NoArg")
+}
+//这里进行allOpen的配置
+allOpen {
+	//配置路径就是咱们先开始定义的那个注解类
+	annotation("com.example.jpademo.annotation.AllOpen")
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
